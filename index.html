@@ -34,12 +34,14 @@
         }
 
         async function startGame() {
-            const configModule = await import(detectDevice());
-            const shouldZoom = detectDevice() === './mobileConfig.js';
+            const deviceConfigPath = detectDevice();
+            const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
+            const configModule = await import(cacheBustedPath);
+            const shouldZoom = deviceConfigPath === './mobileConfig.js';
             const config = configModule.default;
 
             config.scene = config.scene.map(scene => {
-                if (scene.name === 'MainGameScene') { // Use the scene name to match MainGameScene
+                if (scene.name === 'MainGameScene') {
                     return class extends scene {
                         init(data) {
                             super.init({ ...data, shouldZoom });
@@ -50,7 +52,7 @@
             });
 
             document.getElementById('game-container').style.display = 'block';
-            window.game = new Phaser.Game(config); // Make sure game instance is accessible globally
+            window.game = new Phaser.Game(config);
         }
 
         window.onload = startGame;
