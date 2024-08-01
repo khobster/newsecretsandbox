@@ -25,79 +25,19 @@
         canvas {
             display: block;
         }
-        #device-selection {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: #000;
-            color: #ffff00;
-            font-family: 'Luckiest Guy', cursive;
-        }
-        @keyframes rainbow {
-            0% { color: #ff0000; }
-            14% { color: #ff9900; }
-            28% { color: #ffff00; }
-            42% { color: #00ff00; }
-            57% { color: #00ffff; }
-            71% { color: #0000ff; }
-            85% { color: #ff00ff; }
-            100% { color: #ff0000; }
-        }
-        @keyframes sparkle {
-            0%, 20%, 40%, 60%, 80%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 55px #ff00ff, 0 0 75px #ff00ff; }
-            10%, 30%, 50%, 70%, 90% { text-shadow: none; }
-        }
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-        #device-selection h2 {
-            font-size: 40px; /* Change this value to adjust the font size */
-            animation: rainbow 5s linear infinite, sparkle 2s linear infinite;
-            margin-bottom: 20px; /* Add space between h2 and h1 */
-        }
-        #device-selection h1 {
-            font-size: 30px; /* Adjust as needed */
-        }
-        #device-selection button {
-            font-size: 30px; /* Adjust as needed */
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-        }
     </style>
-</head>
-<body>
-    <div id="device-selection">
-        <h2>BEFORE YOU SMACK<br><center>👇</center></h2>
-        <h1>PICK YOUR SCREEN</h1>
-        <button id="mobile-button">📱</button>
-        <button id="desktop-button">💻</button>
-    </div>
-    <div id="game-container" style="display: none;"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
-    <script type="module">
-        import MenuScene from './menu.js';
-        import MainGameScene from './mainGame.js'; // Import MainGameScene
+    <script>
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+            return isMobile ? './mobileConfig.js' : './desktopConfig.js';
+        }
 
-        document.getElementById('mobile-button').addEventListener('click', async () => {
-            const module = await import('./mobileConfig.js');
-            startGame(module.default, true); // Pass true for shouldZoom
-        });
+        async function startGame() {
+            const configModule = await import(detectDevice());
+            const shouldZoom = detectDevice() === './mobileConfig.js';
+            const config = configModule.default;
 
-        document.getElementById('desktop-button').addEventListener('click', async () => {
-            const module = await import('./desktopConfig.js');
-            startGame(module.default, false); // Pass false for shouldZoom
-        });
-
-        let game;
-
-        function startGame(config, shouldZoom) {
-            if (game) {
-                game.destroy(true);
-            }
             config.scene = config.scene.map(scene => {
                 if (scene === MainGameScene) {
                     return class extends MainGameScene {
@@ -108,10 +48,18 @@
                 }
                 return scene;
             });
-            document.getElementById('device-selection').style.display = 'none';
+
             document.getElementById('game-container').style.display = 'block';
-            game = new Phaser.Game(config);
+            new Phaser.Game(config);
         }
+
+        window.onload = startGame;
+
+        window.addEventListener('resize', () => {
+            if (window.game) {
+                window.game.scale.resize(window.innerWidth, window.innerHeight);
+            }
+        });
 
         WebFont.load({
             google: {
@@ -121,12 +69,13 @@
                 // Fonts loaded, you can start the game here if needed
             }
         });
-
-        window.addEventListener('resize', () => {
-            if (game) {
-                game.scale.resize(window.innerWidth, window.innerHeight);
-            }
-        });
+    </script>
+</head>
+<body>
+    <div id="game-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+    <script type="module">
+        import MainGameScene from './mainGame.js'; // Import MainGameScene
     </script>
 </body>
 </html>
