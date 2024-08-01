@@ -33,6 +33,13 @@
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
+        function clearPreviousGame() {
+            if (window.game) {
+                window.game.destroy(true);
+                window.game = null;
+            }
+        }
+
         async function startGame() {
             const deviceConfigPath = detectDevice();
             const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
@@ -55,7 +62,10 @@
             window.game = new Phaser.Game(config);
         }
 
-        window.onload = startGame;
+        window.onload = () => {
+            clearPreviousGame();
+            startGame();
+        };
 
         window.addEventListener('resize', () => {
             if (window.game) {
