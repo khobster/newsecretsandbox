@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333;
+    text-align: center; /* Center-align text */
+}
+
+header {
+    padding: 20px 0;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+header h1 {
+    font-family: 'Luckiest Guy', cursive;
+    color: #333;
+    font-size: 4em; /* Increase the font size for the main headline */
+}
+
+nav a {
+    color: #333;
+    margin: 0 15px;
+    text-decoration: none;
+    font-family: 'Luckiest Guy', cursive;
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center-align content */
+    margin-bottom: 60px; /* Added margin to give space for the footer */
+}
+
+.blog-post {
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Limit the width of blog posts */
+    width: 100%;
+    text-align: left; /* Justify text within blog post */
+}
+
+h2 {
+    color: #333;
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 3em; /* Increase the font size for blog post titles */
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #ffffff;
+    background: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: 'Luckiest Guy', cursive;
+}
+
+footer {
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #ffffff;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
