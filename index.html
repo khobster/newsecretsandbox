@@ -33,13 +33,6 @@
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
-        function clearPreviousGame() {
-            if (window.game) {
-                window.game.destroy(true);
-                window.game = null;
-            }
-        }
-
         async function startGame() {
             const deviceConfigPath = detectDevice();
             const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
@@ -47,8 +40,9 @@
             const shouldZoom = deviceConfigPath === './mobileConfig.js';
             const config = configModule.default;
 
-            config.scene = config.scene.map(scene => {
-                if (scene === window.MainGameScene) {
+            // Extend scenes to handle shouldZoom
+            const extendedScenes = config.scene.map(scene => {
+                if (scene.prototype instanceof window.MainGameScene) {
                     return class extends scene {
                         init(data) {
                             super.init({ ...data, shouldZoom });
@@ -58,14 +52,17 @@
                 return scene;
             });
 
+            config.scene = extendedScenes;
+
+            if (window.game) {
+                window.game.destroy(true); // Destroy previous game instance if it exists
+            }
+
             document.getElementById('game-container').style.display = 'block';
             window.game = new Phaser.Game(config);
         }
 
-        window.onload = () => {
-            clearPreviousGame();
-            startGame();
-        };
+        window.onload = startGame;
 
         window.addEventListener('resize', () => {
             if (window.game) {
