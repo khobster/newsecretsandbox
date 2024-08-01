@@ -33,22 +33,15 @@
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
-        function clearModuleCache(modulePath) {
-            const resolvedPath = new URL(modulePath, document.baseURI).href;
-            if (import.meta.url in import.meta.glob(resolvedPath)) {
-                delete import.meta.glob(resolvedPath);
-            }
-        }
-
         async function startGame() {
             const deviceConfigPath = detectDevice();
-            clearModuleCache(deviceConfigPath);
-            const configModule = await import(deviceConfigPath);
+            const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
+            const configModule = await import(cacheBustedPath);
             const shouldZoom = deviceConfigPath === './mobileConfig.js';
             const config = configModule.default;
 
             config.scene = config.scene.map(scene => {
-                if (scene.name === 'MainGameScene') {
+                if (scene === window.MainGameScene) {
                     return class extends scene {
                         init(data) {
                             super.init({ ...data, shouldZoom });
