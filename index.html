@@ -33,10 +33,17 @@
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
+        function clearModuleCache(modulePath) {
+            const resolvedPath = new URL(modulePath, document.baseURI).href;
+            if (import.meta.url in import.meta.glob(resolvedPath)) {
+                delete import.meta.glob(resolvedPath);
+            }
+        }
+
         async function startGame() {
             const deviceConfigPath = detectDevice();
-            const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
-            const configModule = await import(cacheBustedPath);
+            clearModuleCache(deviceConfigPath);
+            const configModule = await import(deviceConfigPath);
             const shouldZoom = deviceConfigPath === './mobileConfig.js';
             const config = configModule.default;
 
