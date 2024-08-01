@@ -30,21 +30,30 @@
         function detectDevice() {
             const userAgent = navigator.userAgent.toLowerCase();
             const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+            console.log('User Agent:', userAgent);
+            console.log('Is Mobile:', isMobile);
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
         async function startGame() {
             const deviceConfigPath = detectDevice();
+            console.log('Device Config Path:', deviceConfigPath);
             const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
+            console.log('Cache Busted Path:', cacheBustedPath);
+
             const configModule = await import(cacheBustedPath);
             const shouldZoom = deviceConfigPath === './mobileConfig.js';
-            const config = configModule.default;
+            console.log('Should Zoom:', shouldZoom);
 
-            // Extend scenes to handle shouldZoom
+            const config = configModule.default;
+            console.log('Config:', config);
+
             const extendedScenes = config.scene.map(scene => {
+                console.log('Extending Scene:', scene.name || scene);
                 if (scene.prototype instanceof window.MainGameScene) {
                     return class extends scene {
                         init(data) {
+                            console.log('Initializing MainGameScene with data:', data);
                             super.init({ ...data, shouldZoom });
                         }
                     };
@@ -53,13 +62,16 @@
             });
 
             config.scene = extendedScenes;
+            console.log('Extended Scenes Config:', config.scene);
 
             if (window.game) {
-                window.game.destroy(true); // Destroy previous game instance if it exists
+                console.log('Destroying previous game instance');
+                window.game.destroy(true);
             }
 
             document.getElementById('game-container').style.display = 'block';
             window.game = new Phaser.Game(config);
+            console.log('New game instance created');
         }
 
         window.onload = startGame;
@@ -67,6 +79,7 @@
         window.addEventListener('resize', () => {
             if (window.game) {
                 window.game.scale.resize(window.innerWidth, window.innerHeight);
+                console.log('Resized game to:', window.innerWidth, window.innerHeight);
             }
         });
 
@@ -75,7 +88,7 @@
                 families: ['Luckiest Guy', 'Roboto', 'Coustard']
             },
             active: function() {
-                // Fonts loaded, you can start the game here if needed
+                console.log('Fonts loaded');
             }
         });
     </script>
