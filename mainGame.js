@@ -124,19 +124,13 @@ class MainGameScene extends Phaser.Scene {
       .setInteractive()
       .on('pointerdown', () => this.scene.start('PlayerSelectionScene'))
       .setShadow(5, 5, '#000', 10, true, true);
-    switchPlayerButton.setVisible(false);
+
+    // Disable the button by setting it to not interactive and making it fully transparent
+    switchPlayerButton.disableInteractive();
+    switchPlayerButton.setAlpha(0); // Make it fully transparent
 
     this.tweens.add({
       targets: restartButton,
-      alpha: { from: 1, to: 0 },
-      ease: 'Cubic.easeInOut',
-      duration: 300,
-      repeat: -1,
-      yoyo: true
-    });
-
-    this.tweens.add({
-      targets: switchPlayerButton,
       alpha: { from: 1, to: 0 },
       ease: 'Cubic.easeInOut',
       duration: 300,
@@ -220,7 +214,7 @@ class MainGameScene extends Phaser.Scene {
 
     this.startButton = startButton;
     this.restartButton = restartButton;
-    this.switchPlayerButton = switchPlayerButton;
+    this.switchPlayerButton = switchPlayerButton; // Ensure it's assigned to the class
     this.pitcher = pitcher;
     this.ball = ball;
     this.ballShadow = ballShadow;
@@ -309,7 +303,7 @@ class MainGameScene extends Phaser.Scene {
     console.log('Game started');
     this.startButton.setVisible(false);
     this.restartButton.setVisible(false);
-    this.switchPlayerButton.setVisible(false);
+    this.switchPlayerButton.setAlpha(0); // Keep it fully transparent
     this.homeRuns = 0;
     this.outs = 0;
     this.updateScore();
@@ -538,7 +532,7 @@ class MainGameScene extends Phaser.Scene {
     console.log('Resetting game');
     this.startButton.setVisible(true);
     this.restartButton.setVisible(false);
-    this.switchPlayerButton.setVisible(false);
+    this.switchPlayerButton.setAlpha(0); // Keep it fully transparent
     this.gameState = 'waitingForPitch';
     this.outs = 0;
     this.homeRuns = 0;
@@ -561,7 +555,7 @@ class MainGameScene extends Phaser.Scene {
     console.log('Game ended');
     this.time.removeAllEvents();
     this.restartButton.setVisible(true);
-    this.switchPlayerButton.setVisible(true);
+    this.switchPlayerButton.setAlpha(0); // Keep it fully transparent
 
     this.startButton.setVisible(false);
   }
