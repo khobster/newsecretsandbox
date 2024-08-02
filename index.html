@@ -7,6 +7,15 @@
     <meta property="og:image" content="homerunderbyopengraph.png">
     <link rel="icon" href="homerunderbyfavicon.png" type="image/png">
     <title>SMACK HOMERS!</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT5CQ5XD5V"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT5CQ5XD5V');
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto&family=Coustard&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js"></script>
     <style>
@@ -30,33 +39,27 @@
         function detectDevice() {
             const userAgent = navigator.userAgent.toLowerCase();
             const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
-            console.log('User Agent:', userAgent);
-            console.log('Is Mobile:', isMobile);
             return isMobile ? './mobileConfig.js' : './desktopConfig.js';
         }
 
         async function startGame() {
-            const deviceConfigPath = detectDevice();
-            console.log('Device Config Path:', deviceConfigPath);
-            const cacheBustedPath = `${deviceConfigPath}?v=${Date.now()}`;
-            console.log('Cache Busted Path:', cacheBustedPath);
-
-            const configModule = await import(cacheBustedPath);
-            const shouldZoom = deviceConfigPath === './mobileConfig.js';
-            console.log('Should Zoom:', shouldZoom);
-
+            const configModule = await import(detectDevice());
+            const shouldZoom = detectDevice() === './mobileConfig.js';
             const config = configModule.default;
-            console.log('Config:', config);
 
-            if (window.game) {
-                console.log('Destroying previous game instance');
-                window.game.destroy(true);
-                window.game = null;
-            }
+            config.scene = config.scene.map(scene => {
+                if (scene.name === 'MainGameScene') { // Use the scene name to match MainGameScene
+                    return class extends scene {
+                        init(data) {
+                            super.init({ ...data, shouldZoom });
+                        }
+                    };
+                }
+                return scene;
+            });
 
             document.getElementById('game-container').style.display = 'block';
-            window.game = new Phaser.Game(config);
-            console.log('New game instance created');
+            window.game = new Phaser.Game(config); // Make sure game instance is accessible globally
         }
 
         window.onload = startGame;
@@ -64,7 +67,6 @@
         window.addEventListener('resize', () => {
             if (window.game) {
                 window.game.scale.resize(window.innerWidth, window.innerHeight);
-                console.log('Resized game to:', window.innerWidth, window.innerHeight);
             }
         });
 
@@ -73,7 +75,7 @@
                 families: ['Luckiest Guy', 'Roboto', 'Coustard']
             },
             active: function() {
-                console.log('Fonts loaded');
+                // Fonts loaded, you can start the game here if needed
             }
         });
     </script>
@@ -82,42 +84,10 @@
     <div id="game-container"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
     <script type="module">
-        import MainGameScene from 'mainGame.js';
-        import MenuScene from 'menu.js';
-        import PitcherSelectionScene from 'pitcherSelection.js';
+        import MainGameScene from './mainGame.js'; // Import MainGameScene
 
-        // Ensure scenes are globally accessible for dynamic class extension
+        // Ensure MainGameScene is globally accessible for dynamic class extension
         window.MainGameScene = MainGameScene;
-        window.MenuScene = MenuScene;
-        window.PitcherSelectionScene = PitcherSelectionScene;
-
-        function initializeGame() {
-            const config = {
-                type: Phaser.AUTO,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                scene: [MenuScene, PitcherSelectionScene, MainGameScene],
-                scale: {
-                    mode: Phaser.Scale.RESIZE,
-                    autoCenter: Phaser.Scale.CENTER_BOTH
-                },
-                physics: {
-                    default: 'arcade',
-                    arcade: {
-                        gravity: { y: 0 },
-                        debug: false
-                    }
-                }
-            };
-
-            if (window.game) {
-                window.game.destroy(true);
-            }
-
-            window.game = new Phaser.Game(config);
-        }
-
-        window.onload = initializeGame;
     </script>
 </body>
 </html>
