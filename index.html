@@ -67,6 +67,7 @@
             if (window.game) {
                 console.log('Destroying previous game instance');
                 window.game.destroy(true);
+                window.game = null;
             }
 
             document.getElementById('game-container').style.display = 'block';
