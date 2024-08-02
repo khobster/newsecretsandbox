@@ -1,24 +1,21 @@
-import MenuScene from './menu.js';
-import PlayerSelectionScene from './playerSelection.js';
+import MenuScene from './menuScene.js';
 import PitcherSelectionScene from './pitcherSelection.js';
 import MainGameScene from './mainGame.js';
 
-const mobileConfig = {
+export default {
     type: Phaser.AUTO,
-    parent: 'game-container',
-    width: 1080,  // Original width
-    height: 2340,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    scene: [MenuScene, PitcherSelectionScene, MainGameScene],
     scale: {
-        mode: Phaser.Scale.ENVELOP, // Changed to ENVELOP mode
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
         default: 'arcade',
         arcade: {
+            gravity: { y: 0 },
             debug: false
         }
-    },
-    scene: [MenuScene, PlayerSelectionScene, PitcherSelectionScene, MainGameScene]
+    }
 };
-
-export default mobileConfig;
