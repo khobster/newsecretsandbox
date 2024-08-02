@@ -9,14 +9,14 @@ class MainGameScene extends Phaser.Scene {
     this.maxOuts = 5;
     this.maxSwingAngle = 45;
     this.minSwingAngle = -45;
-    this.shouldZoom = false; // Add this flag
+    this.shouldZoom = false;
   }
 
   init(data) {
     this.selectedPlayer = data.player;
     this.handedness = data.handedness;
     this.selectedPitcher = data.pitcher;
-    this.shouldZoom = data.shouldZoom || false; // Initialize it based on data
+    this.shouldZoom = data.shouldZoom || false;
     console.log('Scene initialized with player:', this.selectedPlayer, 'Handedness:', this.handedness, 'Pitcher:', this.selectedPitcher, 'Should Zoom:', this.shouldZoom);
   }
 
@@ -37,8 +37,8 @@ class MainGameScene extends Phaser.Scene {
   }
 
   create() {
-    const offsetX = this.scale.width / 2 - 400; // Adjust offset for centering
-    const offsetY = this.scale.height / 2 - 262; // Adjust offset for centering
+    const offsetX = this.scale.width / 2 - 400;
+    const offsetY = this.scale.height / 2 - 262;
 
     this.offsetX = offsetX;
     this.offsetY = offsetY;
@@ -144,7 +144,7 @@ class MainGameScene extends Phaser.Scene {
       yoyo: true
     });
 
-    const playerNameText = this.add.text(this.scale.width / 2, offsetY + 594, ${this.selectedPlayer}, {
+    const playerNameText = this.add.text(this.scale.width / 2, offsetY + 594, `${this.selectedPlayer}`, {
       fontSize: '45px',
       fontFamily: 'Luckiest Guy',
       fill: '#FFFFFF',
@@ -241,8 +241,8 @@ class MainGameScene extends Phaser.Scene {
       console.log('Animation frame index:', frame.index);
     });
 
-    this.cameras.main.setZoom(this.shouldZoom ? 1 : 1); // Start with no zoom or initial zoom if required
-    this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2); // Center the camera
+    this.cameras.main.setZoom(this.shouldZoom ? 1 : 1);
+    this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
 
     this.pitchTimerEvent = this.time.addEvent({
       delay: 3000,
@@ -256,7 +256,7 @@ class MainGameScene extends Phaser.Scene {
   createBatter() {
     const batterKey = this.handedness === 'L' ? 'batter_l' : 'batter';
     const batterSwingKey = this.handedness === 'L' ? 'batter_swing_l' : 'batter_swing';
-    let batterX = this.scale.width / 2 + (this.handedness === 'L' ? 25 : -35); // Adjust for centering
+    let batterX = this.scale.width / 2 + (this.handedness === 'L' ? 25 : -35);
 
     console.log('Using batter sprite:', batterKey, 'at position:', batterX);
 
@@ -316,7 +316,6 @@ class MainGameScene extends Phaser.Scene {
     this.gameState = 'waitingForPitch';
     this.pitchTimerEvent.paused = false;
 
-    // Sudden zoom in when the game starts
     if (this.shouldZoom) {
       this.cameras.main.setZoom(2.5);
       this.cameras.main.centerOn(this.scale.width / 2, this.offsetY + 350);
@@ -334,8 +333,8 @@ class MainGameScene extends Phaser.Scene {
     this.pitcher.anims.play('pitcher_throw');
 
     if (this.shouldZoom) {
-      this.cameras.main.setZoom(2.5); // Ensure zoom is maintained
-      this.cameras.main.centerOn(this.scale.width / 2, this.offsetY + 350); // Ensure camera position is maintained
+      this.cameras.main.setZoom(2.5);
+      this.cameras.main.centerOn(this.scale.width / 2, this.offsetY + 350);
     }
 
     this.pitcher.once('animationcomplete', () => {
@@ -454,9 +453,8 @@ class MainGameScene extends Phaser.Scene {
     });
 
     if (this.shouldZoom) {
-      // Pan out and zoom out when the ball is hit to show more of the field
-      this.cameras.main.setZoom(1.5); // Zoom out a bit more
-      this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2); // Center the camera
+      this.cameras.main.setZoom(1.5);
+      this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
     }
   }
 
@@ -503,7 +501,7 @@ class MainGameScene extends Phaser.Scene {
   }
 
   updateScore() {
-    this.scoreText.setText(Home Runs ${this.homeRuns}\nOuts ${this.outs});
+    this.scoreText.setText(`Home Runs ${this.homeRuns}\nOuts ${this.outs}`);
   }
 
   resetPitch() {
@@ -544,7 +542,7 @@ class MainGameScene extends Phaser.Scene {
     this.homeRuns = 0;
     this.updateScore();
     this.batter.setFrame(0);
-    this.cameras.main.setZoom(this.shouldZoom ? 1 : 1); // Ensure no zoom if shouldZoom is false
+    this.cameras.main.setZoom(this.shouldZoom ? 1 : 1);
     this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
 
     this.pitchTimerEvent.remove();
