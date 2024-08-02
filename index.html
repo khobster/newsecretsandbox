@@ -48,22 +48,6 @@
             const config = configModule.default;
             console.log('Config:', config);
 
-            const extendedScenes = config.scene.map(scene => {
-                console.log('Extending Scene:', scene.name || scene);
-                if (scene.prototype instanceof window.MainGameScene) {
-                    return class extends scene {
-                        init(data) {
-                            console.log('Initializing MainGameScene with data:', data);
-                            super.init({ ...data, shouldZoom });
-                        }
-                    };
-                }
-                return scene;
-            });
-
-            config.scene = extendedScenes;
-            console.log('Extended Scenes Config:', config.scene);
-
             if (window.game) {
                 console.log('Destroying previous game instance');
                 window.game.destroy(true);
@@ -98,10 +82,42 @@
     <div id="game-container"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
     <script type="module">
-        import MainGameScene from './mainGame.js'; // Import MainGameScene
+        import MainGameScene from './mainGame.js';
+        import MenuScene from './menuScene.js';
+        import PitcherSelectionScene from './pitcherSelection.js';
 
-        // Ensure MainGameScene is globally accessible for dynamic class extension
+        // Ensure scenes are globally accessible for dynamic class extension
         window.MainGameScene = MainGameScene;
+        window.MenuScene = MenuScene;
+        window.PitcherSelectionScene = PitcherSelectionScene;
+
+        function initializeGame() {
+            const config = {
+                type: Phaser.AUTO,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                scene: [MenuScene, PitcherSelectionScene, MainGameScene],
+                scale: {
+                    mode: Phaser.Scale.RESIZE,
+                    autoCenter: Phaser.Scale.CENTER_BOTH
+                },
+                physics: {
+                    default: 'arcade',
+                    arcade: {
+                        gravity: { y: 0 },
+                        debug: false
+                    }
+                }
+            };
+
+            if (window.game) {
+                window.game.destroy(true);
+            }
+
+            window.game = new Phaser.Game(config);
+        }
+
+        window.onload = initializeGame;
     </script>
 </body>
 </html>
