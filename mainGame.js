@@ -587,6 +587,11 @@ class MainGameScene extends Phaser.Scene {
     // Get the top scores and determine the rank
     const topScores = await this.getTopScores();
     console.log('Top scores:', topScores);
+
+    // Sort the scores in descending order
+    topScores.sort((a, b) => b.score - a.score);
+
+    // Find the rank of the user's score
     const rank = topScores.findIndex(score => score.score <= this.homeRuns) + 1;
 
     console.log('Calculated rank:', rank);
