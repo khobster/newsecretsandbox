@@ -545,7 +545,7 @@ class MainGameScene extends Phaser.Scene {
     }
   }
 
-  resetGame() {
+  async resetGame() {
     console.log('Resetting game');
     this.startButton.setVisible(true);
     this.restartButton.setVisible(false);
@@ -591,21 +591,42 @@ class MainGameScene extends Phaser.Scene {
   }
 
   async submitScore(player, score) {
-    const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/submitScore', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ player, score })
-    });
-    const result = await response.json();
-    console.log(result.status);
+    try {
+      const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/submitScore', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ player, score })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to submit score: ${response.status} ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log(result.status);
+    } catch (error) {
+      console.error('Error submitting score:', error);
+    }
   }
 
   async getTopScores() {
-    const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/getTopScores');
-    const scores = await response.json();
-    return scores;
+    try {
+      const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/getTopScores');
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to get top scores: ${response.status} ${errorText}`);
+      }
+
+      const scores = await response.json();
+      return scores;
+    } catch (error) {
+      console.error('Error getting top scores:', error);
+      return [];
+    }
   }
 }
 
