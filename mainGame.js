@@ -212,7 +212,7 @@ class MainGameScene extends Phaser.Scene {
       }
     }).setOrigin(0.5).setVisible(false);
 
-    const rankText = this.add.text(this.scale.width / 2, offsetY + 370, '', {
+    const rankText = this.add.text(this.scale.width / 2, offsetY + 550, 'Loading rank...', {
       fontSize: '40px',
       fontFamily: 'Luckiest Guy',
       fill: '#ffff00',
@@ -577,6 +577,9 @@ class MainGameScene extends Phaser.Scene {
 
     this.startButton.setVisible(false);
 
+    // Display loading message
+    this.rankText.setText('Loading rank...').setVisible(true);
+
     // Submit the current score
     const submitResult = await this.submitScore(this.selectedPlayer, this.homeRuns);
     console.log('Score submission result:', submitResult);
@@ -588,8 +591,8 @@ class MainGameScene extends Phaser.Scene {
 
     console.log('Calculated rank:', rank);
 
-    // Ensure the rankText is visible and correctly updated
-    this.rankText.setText(`That was the #${rank} home run score of today!`).setVisible(true);
+    // Update the rankText with the rank
+    this.rankText.setText(`TODAY'S RANK: ${rank}`);
 
     // Optionally, shake or flash the rankText to draw attention
     this.tweens.add({
