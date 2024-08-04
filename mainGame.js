@@ -212,10 +212,10 @@ class MainGameScene extends Phaser.Scene {
       }
     }).setOrigin(0.5).setVisible(false);
 
-    const rankText = this.add.text(this.scale.width / 2, offsetY + 800, '', {
+    const rankText = this.add.text(this.scale.width / 2, offsetY + 370, '', {
       fontSize: '40px',
       fontFamily: 'Luckiest Guy',
-      fill: '#fff',
+      fill: '#ffff00',
       stroke: '#000',
       strokeThickness: 1,
       shadow: {
@@ -549,6 +549,7 @@ class MainGameScene extends Phaser.Scene {
     console.log('Resetting game');
     this.startButton.setVisible(true);
     this.restartButton.setVisible(false);
+    this.rankText.setVisible(false); // Hide the rank text when resetting the game
     this.switchPlayerButton.setAlpha(0); // Keep it fully transparent
     this.gameState = 'waitingForPitch';
     this.outs = 0;
@@ -587,7 +588,18 @@ class MainGameScene extends Phaser.Scene {
 
     console.log('Calculated rank:', rank);
 
+    // Ensure the rankText is visible and correctly updated
     this.rankText.setText(`That was the #${rank} home run score of today!`).setVisible(true);
+
+    // Optionally, shake or flash the rankText to draw attention
+    this.tweens.add({
+      targets: this.rankText,
+      alpha: { from: 0, to: 1 },
+      ease: 'Cubic.easeInOut',
+      duration: 500,
+      repeat: -1,
+      yoyo: true
+    });
   }
 
   coinFlipForHomeRun() {
