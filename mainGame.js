@@ -36,7 +36,7 @@ class MainGameScene extends Phaser.Scene {
     this.load.image('ball', 'ball.png');
   }
 
-  create() {
+  async create() {
     const offsetX = this.scale.width / 2 - 400; // Adjust offset for centering
     const offsetY = this.scale.height / 2 - 262; // Adjust offset for centering
 
@@ -212,6 +212,22 @@ class MainGameScene extends Phaser.Scene {
       }
     }).setOrigin(0.5).setVisible(false);
 
+    const rankText = this.add.text(this.scale.width / 2, offsetY + 800, '', {
+      fontSize: '40px',
+      fontFamily: 'Luckiest Guy',
+      fill: '#fff',
+      stroke: '#000',
+      strokeThickness: 1,
+      shadow: {
+        offsetX: 3,
+        offsetY: 3,
+        color: '#000',
+        blur: 5,
+        stroke: true,
+        fill: true
+      }
+    }).setOrigin(0.5).setVisible(false);
+
     this.startButton = startButton;
     this.restartButton = restartButton;
     this.switchPlayerButton = switchPlayerButton; // Ensure it's assigned to the class
@@ -222,6 +238,7 @@ class MainGameScene extends Phaser.Scene {
     this.scoreText = scoreText;
     this.homeRunText = homeRunText;
     this.outText = outText;
+    this.rankText = rankText;
 
     this.createBatter();
 
@@ -454,7 +471,7 @@ class MainGameScene extends Phaser.Scene {
     }
   }
 
-  homeRun() {
+  async homeRun() {
     console.log('Home run scored');
     this.homeRuns++;
     this.updateScore();
@@ -551,17 +568,44 @@ class MainGameScene extends Phaser.Scene {
     });
   }
 
-  endGame() {
+  async endGame() {
     console.log('Game ended');
     this.time.removeAllEvents();
     this.restartButton.setVisible(true);
     this.switchPlayerButton.setAlpha(0); // Keep it fully transparent
 
     this.startButton.setVisible(false);
+
+    // Submit the current score
+    await this.submitScore(this.selectedPlayer, this.homeRuns);
+
+    // Get the top scores and determine the rank
+    const topScores = await this.getTopScores();
+    const rank = topScores.findIndex(score => score.score <= this.homeRuns) + 1;
+
+    this.rankText.setText(`That was the #${rank} home run score of today!`).setVisible(true);
   }
 
   coinFlipForHomeRun() {
     return Math.random() < 0.5;
+  }
+
+  async submitScore(player, score) {
+    const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/submitScore', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ player, score })
+    });
+    const result = await response.json();
+    console.log(result.status);
+  }
+
+  async getTopScores() {
+    const response = await fetch('https://us-central1-smack-homers.cloudfunctions.net/getTopScores');
+    const scores = await response.json();
+    return scores;
   }
 }
 
