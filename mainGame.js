@@ -577,14 +577,16 @@ class MainGameScene extends Phaser.Scene {
     this.startButton.setVisible(false);
 
     // Submit the current score
-    const submissionResult = await this.submitScore(this.selectedPlayer, this.homeRuns);
-    console.log('Score submission result:', submissionResult);
+    const submitResult = await this.submitScore(this.selectedPlayer, this.homeRuns);
+    console.log('Score submission result:', submitResult);
 
     // Get the top scores and determine the rank
     const topScores = await this.getTopScores();
     console.log('Top scores:', topScores);
-
     const rank = topScores.findIndex(score => score.score <= this.homeRuns) + 1;
+
+    console.log('Calculated rank:', rank);
+
     this.rankText.setText(`That was the #${rank} home run score of today!`).setVisible(true);
   }
 
@@ -611,7 +613,7 @@ class MainGameScene extends Phaser.Scene {
       return result;
     } catch (error) {
       console.error('Error submitting score:', error);
-      return { error: error.message };
+      return { message: 'Error submitting score' };
     }
   }
 
